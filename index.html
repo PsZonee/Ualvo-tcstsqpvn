@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ualvo tcstsqpvn – Peel & Eat!</title>
+    <style>
+        :root {
+            --bg-pink: #ffe0ec;
+            --bg-pink2: #ffd4e3;
+            --pink-dark: #e891b4;
+            --pink-accent: #ff6b9d;
+            --chocolate-base: #8b5e34;
+            --chocolate-light: #a87d52;
+            --chocolate-highlight: #c49a6c;
+            --chocolate-dark: #5c3818;
+            --chocolate-shadow: #3e1f0a;
+            --wrapper-purple: #3a1040;
+            --wrapper-purple-light: #4d1a54;
+            --wrapper-purple-dark: #2a0a30;
+            --wrapper-gold: #d4a853;
+            --wrapper-gold-light: #e8c878;
+            --wrapper-foil: #c8c0b8;
+            --cream: #fff5f0;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffd6e8 0%, #ffe4ef 20%, #ffd0e2 40%, #ffdde8 60%, #ffd4e6 80%, #ffe8f2 100%);
+            background-size: 300% 300%;
+            animation: bgShift 14s ease-in-out infinite;
+            font-family: 'Segoe UI', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            overflow-x: hidden;
+            cursor: default;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            position: relative;
+            padding: 10px;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 30%; }
+            50% { background-position: 80% 100%; }
+            75% { background-position: 20% 80%; }
+        }
+
+        /* Floating hearts */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .floating-heart {
+            position: absolute;
+            bottom: -60px;
+            font-size: 22px;
+            animation: floatUp linear infinite;
+            opacity: 0.5;
+            filter: blur(0.5px);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.5); opacity: 0; }
+            8% { opacity: 0.65; }
+            25% { transform: translateY(-28vh) translateX(25px) rotate(12deg) scale(0.9); opacity: 0.5; }
+            55% { transform: translateY(-58vh) translateX(-18px) rotate(-8deg) scale(0.75); opacity: 0.3; }
+            85% { opacity: 0.06; }
+            100% { transform: translateY(-105vh) translateX(10px) rotate(4deg) scale(0.35); opacity: 0; }
+        }
+
+        /* Main container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Instruction */
+        .instruction {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #5c2550;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.72);
+            padding: 12px 24px;
+            border-radius: 50px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 18px rgba(160, 90, 130, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: instructionPulse 2.8s ease-in-out infinite;
+            max-width: 90vw;
+            line-height: 1.4;
+        }
+        @keyframes instructionPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.035); }
+        }
+        .instruction.peeling-done {
+            animation: instructionBounce 0.6s ease;
+            color: #4a2a10;
+            background: rgba(255, 242, 230, 0.9);
+        }
+        @keyframes instructionBounce {
+            0%, 100% { transform: scale(1); }
+            20% { transform: scale(1.1); }
+            40% { transform: scale(0.93); }
+            60% { transform: scale(1.05); }
+            80% { transform: scale(0.96); }
+        }
+
+        /* Chocolate area – longer bar width, adjustable height */
+        .chocolate-area {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            /* Longer bar: height increased to give a slim, elegant Dairy Milk proportion */
+            height: 280px;
+            perspective: 900px;
+            cursor: pointer;
+            border-radius: 20px;
+            margin: 0 auto;
+        }
+
+        /* Responsive adjustments for mobile */
+        @media (max-width: 480px) {
+            .chocolate-area {
+                max-width: 320px;
+                height: 230px;
+            }
+            .instruction {
+                font-size: 1.1rem;
+                padding: 10px 20px;
+            }
+        }
+        @media (max-width: 380px) {
+            .chocolate-area {
+                max-width: 280px;
+                height: 200px;
+            }
+            .instruction {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Chocolate bar */
+        .chocolate-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #5c3818;
+            border-radius: 16px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 7px;
+            padding: 10px;
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 3px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            transform: rotateX(2deg);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .chocolate-bar.revealed {
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                0 0 30px rgba(180, 130, 80, 0.35),
+                inset 0 0 0 3px rgba(0, 0, 0, 0.15);
+        }
+        .chocolate-bar:hover {
+            transform: rotateX(1deg) translateY(-2px);
+        }
+
+        /* Chocolate segment */
+        .chocolate-segment {
+            background: linear-gradient(175deg,
+                    #c49a6c 0%, #b8895a 12%, #a87d52 25%, #9a7045 40%, #8b5e34 55%, #7a4f2a 70%, #6b4220 100%);
+            border-radius: 7px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                0 3px 6px rgba(0, 0, 0, 0.35),
+                inset 0 1px 2px rgba(255, 210, 160, 0.3),
+                inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transform: translateY(0);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .chocolate-segment::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 12%;
+            width: 76%;
+            height: 28%;
+            background: rgba(255, 220, 175, 0.25);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+        .chocolate-segment::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 18%;
+            width: 64%;
+            height: 12%;
+            background: rgba(0, 0, 0, 0.18);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .chocolate-segment .gloss-dot {
+            position: absolute;
+            top: 12%;
+            left: 20%;
+            width: 14%;
+            height: 14%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            filter: blur(1px);
+        }
+        .chocolate-segment:hover {
+            transform: translateY(-5px) scale(1.07);
+            box-shadow:
+                0 10px 22px rgba(0, 0, 0, 0.45),
+                inset 0 1px 2px rgba(255, 210, 160, 0.4),
+                inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+        }
+        .chocolate-segment:active {
+            transform: scale(0.9);
+            transition: transform 0.06s ease;
+        }
+        .chocolate-segment.eaten {
+            animation: biteAnimation 0.5s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+            pointer-events: none;
+        }
+        @keyframes biteAnimation {
+            0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+            10% { transform: scale(1.3) rotate(-6deg); opacity: 0.9; filter: brightness(1.3); }
+            35% { transform: scale(0.65) rotate(10deg); opacity: 0.5; filter: brightness(0.7); }
+            65% { transform: scale(0.2) rotate(-25deg); opacity: 0.2; }
+            100% { transform: scale(0) rotate(45deg); opacity: 0; }
+        }
+
+        /* Wrapper overlay */
+        .wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(185deg,
+                    #4d1a54 0%, #3a1040 8%, #2f0d34 30%, #3a1040 55%, #4d1a54 85%, #3a1040 100%);
+            border-radius: 16px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            clip-path: inset(0% 0 0 0);
+            transition: clip-path 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.35),
+                0 2px 6px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 2px rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+        }
+        .wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 25% 15%, rgba(255, 255, 255, 0.07) 0%, transparent 45%),
+                radial-gradient(ellipse at 65% 55%, rgba(255, 255, 255, 0.04) 0%, transparent 35%),
+                radial-gradient(ellipse at 40% 75%, rgba(212, 168, 83, 0.06) 0%, transparent 30%);
+            pointer-events: none;
+            border-radius: 16px;
+        }
+        .wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 3%;
+            right: 3%;
+            bottom: 0;
+            border: 2px solid rgba(212, 168, 83, 0.3);
+            border-radius: 14px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Tear strip */
+        .tear-strip {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 58%;
+            height: 5px;
+            background: linear-gradient(90deg,
+                    transparent, #c49a3c 12%, #e8c878 25%, #d4a853 40%, #e8c878 55%, #d4a853 70%, #c49a3c 85%, transparent);
+            border-radius: 3px;
+            z-index: 4;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+        .tear-tab {
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 20px;
+            background: linear-gradient(180deg, #f0d890 0%, #d4a853 40%, #b8903c 100%);
+            border-radius: 0 0 14px 14px;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 800;
+            color: #4a2a10;
+            letter-spacing: 1px;
+            animation: tabWiggle 2.5s ease-in-out infinite;
+            cursor: pointer;
+        }
+        @keyframes tabWiggle {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            20% { transform: translateX(-50%) rotate(3.5deg); }
+            50% { transform: translateX(-50%) rotate(-2.5deg); }
+            75% { transform: translateX(-50%) rotate(1.5deg); }
+        }
+        .tear-tab.pulled {
+            animation: tabPull 0.4s ease-out forwards;
+        }
+        @keyframes tabPull {
+            0% { transform: translateX(-50%) rotate(0deg) scale(1); }
+            100% { transform: translateX(-50%) rotate(-20deg) scale(1.2) translateY(10px); opacity: 0.5; }
+        }
+
+        /* Wrapper branding */
+        .wrapper-branding {
+            text-align: center;
+            z-index: 1;
+            pointer-events: none;
+            padding: 15px 20px;
+            position: relative;
+        }
+        .wrapper-branding .brand-name {
+            display: block;
+            font-size: 2.3rem;
+            font-weight: 900;
+            color: #f0d890;
+            letter-spacing: 1.5px;
+            text-shadow:
+                0 3px 8px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(240, 216, 144, 0.25),
+                0 1px 0 rgba(255, 255, 255, 0.1);
+            font-family: 'Georgia', 'Times New Roman', 'Palatino', serif;
+            line-height: 1.1;
+        }
+        @media (max-width: 480px) {
+            .wrapper-branding .brand-name {
+                font-size: 1.8rem;
+                letter-spacing: 1px;
+            }
+            .tear-tab {
+                width: 45px;
+                height: 18px;
+                font-size: 7px;
+            }
+        }
+        .wrapper-branding .brand-subtitle {
+            display: block;
+            font-size: 0.8rem;
+            color: #e8c878;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 5px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Wrapper sparkles */
+        .wrapper-sparkle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 16px;
+            z-index: 6;
+            animation: sparkleFloat 3.5s ease-in-out infinite;
+        }
+        @keyframes sparkleFloat {
+            0%, 100% { opacity: 0.25; transform: translateY(0) scale(0.7); }
+            50% { opacity: 1; transform: translateY(-14px) scale(1.35); }
+        }
+
+        /* Peel curl */
+        .peel-curl {
+            position: absolute;
+            left: 2%;
+            right: 2%;
+            height: 22px;
+            pointer-events: none;
+            z-index: 12;
+            display: none;
+            border-radius: 0 0 8px 8px;
+            background: linear-gradient(180deg,
+                    #3a1040 0%, #4d1a54 25%, #8a7a70 55%, #b8afa8 75%, transparent 100%);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+            transform: perspective(200px) rotateX(8deg);
+            transform-origin: top center;
+            transition: top 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .peel-curl.active {
+            display: block;
+        }
+
+        /* Particles */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: particleFly 0.7s ease-out forwards;
+        }
+        @keyframes particleFly {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+        .sparkle-particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 18px;
+            animation: sparkleBurst 0.65s ease-out forwards;
+        }
+        @keyframes sparkleBurst {
+            0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+            55% { transform: translate(var(--sdx), var(--sdy)) scale(1.4) rotate(160deg); opacity: 0.8; }
+            100% { transform: translate(var(--sdx2), var(--sdy2)) scale(0) rotate(340deg); opacity: 0; }
+        }
+        .confetti-piece {
+            position: absolute;
+            pointer-events: none;
+            width: 9px;
+            height: 9px;
+            border-radius: 2px;
+            animation: confettiFall 1.6s ease-out forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translate(0, -50px) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translate(var(--cx), 380px) rotate(var(--cr)) scale(0.25); opacity: 0; }
+        }
+
+        /* Bite counter */
+        .bite-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #5c2550;
+            background: rgba(255, 255, 255, 0.68);
+            padding: 10px 22px;
+            border-radius: 50px;
+            letter-spacing: 0.4px;
+            box-shadow: 0 4px 15px rgba(160, 90, 130, 0.18);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 90vw;
+        }
+        .bite-counter .emoji {
+            font-size: 1.2rem;
+            animation: emojiBounce 1s ease-in-out infinite;
+        }
+        @keyframes emojiBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .bite-counter.finished {
+            background: rgba(255, 228, 238, 0.9);
+            color: #c94d7c;
+            animation: finishedGlow 1.6s ease-in-out infinite;
+        }
+        @keyframes finishedGlow {
+            0%, 100% { box-shadow: 0 4px 16px rgba(195, 75, 115, 0.2); }
+            50% { box-shadow: 0 4px 32px rgba(195, 75, 115, 0.5); }
+        }
+
+        /* Reset button */
+        .reset-btn {
+            display: none;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #e891b4, #d4688e);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            box-shadow: 0 7px 22px rgba(195, 95, 135, 0.38);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: btnAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 5px;
+        }
+        .reset-btn:hover {
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 12px 30px rgba(195, 95, 135, 0.5);
+        }
+        .reset-btn:active {
+            transform: scale(0.92);
+        }
+        @keyframes btnAppear {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Shake */
+        .shake {
+            animation: screenShake 0.35s ease-out;
+        }
+        @keyframes screenShake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-5px) rotate(-0.8deg); }
+            20% { transform: translateX(4px) rotate(0.8deg); }
+            30% { transform: translateX(-3px); }
+            40% { transform: translateX(2px); }
+            60% { transform: translateX(-1.5px); }
+            80% { transform: translateX(0.5px); }
+        }
+        .wrapper-fall {
+            animation: wrapperFallOff 0.7s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+            pointer-events: none !important;
+        }
+        @keyframes wrapperFallOff {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; clip-path: inset(100% 0 0 0); }
+            40% { transform: translateY(30px) rotate(-5deg); opacity: 0.7; }
+            100% { transform: translateY(180px) rotate(-15deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating hearts -->
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <!-- Particles -->
+    <div class="particles-container" id="particlesContainer"></div>
+
+    <!-- Main -->
+    <div class="main-container" id="mainContainer">
+        <div class="instruction" id="instruction">👆 Tap the tab to peel the wrapper!</div>
+
+        <div class="chocolate-area" id="chocolateArea">
+            <div class="chocolate-bar" id="chocolateBar"></div>
+            <div class="wrapper" id="wrapper">
+                <div class="tear-tab" id="tearTab">↕ PULL</div>
+                <div class="tear-strip"></div>
+                <div class="wrapper-branding">
+                    <span class="brand-name">Ualvo<br>tcstsqpvn</span>
+                    <span class="brand-subtitle">✦ Milk Chocolate ✦</span>
+                </div>
+                <span class="wrapper-sparkle" style="top:12%;left:10%;animation-delay:0s;">✨</span>
+                <span class="wrapper-sparkle" style="top:20%;right:13%;animation-delay:1.3s;">⭐</span>
+                <span class="wrapper-sparkle" style="bottom:22%;left:16%;animation-delay:2.3s;">💫</span>
+                <span class="wrapper-sparkle" style="bottom:16%;right:14%;animation-delay:0.6s;">✨</span>
+                <span class="wrapper-sparkle" style="top:55%;left:22%;animation-delay:1.8s;">💖</span>
+            </div>
+            <div class="peel-curl" id="peelCurl"></div>
+        </div>
+
+        <div class="bite-counter" id="biteCounter">
+            <span class="emoji">🍫</span> Chocolate ready: <strong>12 pieces</strong>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">🔄 Get Another Bar!</button>
+    </div>
+
+    <script>
+        (function() {
+            // ────────────────────────────
+            // DOM refs
+            // ────────────────────────────
+            const chocolateBar = document.getElementById('chocolateBar');
+            const wrapper = document.getElementById('wrapper');
+            const peelCurl = document.getElementById('peelCurl');
+            const tearTab = document.getElementById('tearTab');
+            const instruction = document.getElementById('instruction');
+            const biteCounter = document.getElementById('biteCounter');
+            const resetBtn = document.getElementById('resetBtn');
+            const chocolateArea = document.getElementById('chocolateArea');
+            const particlesContainer = document.getElementById('particlesContainer');
+            const heartsContainer = document.getElementById('heartsContainer');
+
+            // ────────────────────────────
+            // State
+            // ────────────────────────────
+            const TOTAL_PEEL_TAPS = 8;
+            const TOTAL_SEGMENTS = 12;
+            let peelTapCount = 0;
+            let eatenSegments = new Array(TOTAL_SEGMENTS).fill(false);
+            let isPeelingPhase = true;
+            let isAnimating = false;
+            let totalEaten = 0;
+            let firstTapDone = false;
+
+            // ────────────────────────────
+            // Build chocolate segments
+            // ────────────────────────────
+            function buildSegments() {
+                chocolateBar.innerHTML = '';
+                for (let i = 0; i < TOTAL_SEGMENTS; i++) {
+                    const seg = document.createElement('div');
+                    seg.className = 'chocolate-segment';
+                    seg.dataset.index = i;
+                    // Gloss dot
+                    const dot = document.createElement('span');
+                    dot.className = 'gloss-dot';
+                    seg.appendChild(dot);
+                    // Events
+                    seg.addEventListener('click', (e) => onSegmentClick(e, seg, i));
+                    seg.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        onSegmentClick(e, seg, i);
+                    });
+                    chocolateBar.appendChild(seg);
+                }
+            }
+
+            function disableSegmentClicks() {
+                document.querySelectorAll('.chocolate-segment').forEach(s => s.style.pointerEvents = 'none');
+            }
+
+            function enableSegmentClicks() {
+                document.querySelectorAll('.chocolate-segment').forEach(s => {
+                    if (!eatenSegments[parseInt(s.dataset.index)]) {
+                        s.style.pointerEvents = 'auto';
+                    }
+                });
+            }
+
+            // ────────────────────────────
+            // Wrapper / peel handling
+            // ────────────────────────────
+            wrapper.addEventListener('click', onWrapperClick);
+            wrapper.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                onWrapperClick(e);
+            });
+
+            function onWrapperClick(e) {
+                if (!isPeelingPhase || isAnimating) return;
+                if (peelTapCount >= TOTAL_PEEL_TAPS) return;
+
+                isAnimating = true;
+                peelTapCount++;
+
+                // First tap – animate tear tab
+                if (!firstTapDone) {
+                    firstTapDone = true;
+                    tearTab.classList.add('pulled');
+                    spawnSparklesAtEdge(0, 8);
+                }
+
+                const peelPercent = Math.min((peelTapCount / TOTAL_PEEL_TAPS) * 100, 100);
+                wrapper.style.clipPath = `inset(${peelPercent}% 0 0 0)`;
+
+                // Update peel-curl position
+                const areaHeight = chocolateArea.offsetHeight;
+                const curlTop = (peelPercent / 100) * areaHeight;
+                peelCurl.style.top = Math.max(0, curlTop - 11) + 'px';
+                peelCurl.classList.add('active');
+
+                // Spawn particles at peel edge
+                spawnSparklesAtEdge(peelPercent, 6);
+
+                // Update instruction
+                if (peelTapCount < TOTAL_PEEL_TAPS) {
+                    const rem = TOTAL_PEEL_TAPS - peelTapCount;
+                    instruction.textContent = `👆 Keep peeling! (${rem} more tap${rem > 1 ? 's' : ''})`;
+                    chocolateArea.classList.add('shake');
+                    setTimeout(() => chocolateArea.classList.remove('shake'), 350);
+                }
+
+                // Fully peeled?
+                if (peelTapCount >= TOTAL_PEEL_TAPS) {
+                    finishPeeling();
+                }
+
+                setTimeout(() => { isAnimating = false; }, 420);
+            }
+
+            function spawnSparklesAtEdge(peelPercent, count) {
+                const rect = chocolateArea.getBoundingClientRect();
+                const edgeY = rect.top + (peelPercent / 100) * rect.height;
+                const cx = rect.left + rect.width / 2;
+                spawnSparkles(cx, edgeY, count);
+            }
+
+            function finishPeeling() {
+                wrapper.style.clipPath = 'inset(100% 0 0 0)';
+                wrapper.style.pointerEvents = 'none';
+                peelCurl.style.top = (chocolateArea.offsetHeight - 11) + 'px';
+
+                // Animate wrapper falling away
+                setTimeout(() => {
+                    wrapper.classList.add('wrapper-fall');
+                    peelCurl.classList.remove('active');
+                }, 300);
+
+                // Clean up after fall
+                setTimeout(() => {
+                    wrapper.style.display = 'none';
+                    peelCurl.style.display = 'none';
+                }, 1000);
+
+                isPeelingPhase = false;
+                chocolateBar.classList.add('revealed');
+                instruction.textContent = '😋 Yay! Tap the chocolate to take a bite!';
+                instruction.classList.add('peeling-done');
+                biteCounter.innerHTML = '<span class="emoji">🍫</span> Bites left: <strong>12</strong>';
+                enableSegmentClicks();
+
+                // Celebration
+                const rect = chocolateArea.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                spawnSparkles(cx, cy, 25);
+                spawnConfetti(cx, cy - 20, 35);
+
+                chocolateBar.style.transform = 'rotateX(2deg) scale(1.03)';
+                setTimeout(() => { chocolateBar.style.transform = 'rotateX(2deg) scale(1)'; }, 350);
+            }
+
+            // ────────────────────────────
+            // Segment bite handling
+            // ────────────────────────────
+            function onSegmentClick(e, segment, index) {
+                if (isPeelingPhase || isAnimating) return;
+                if (eatenSegments[index]) return;
+
+                isAnimating = true;
+                eatenSegments[index] = true;
+                totalEaten++;
+
+                const segRect = segment.getBoundingClientRect();
+                const segCX = segRect.left + segRect.width / 2;
+                const segCY = segRect.top + segRect.height / 2;
+
+                segment.classList.add('eaten');
+                spawnCrumbs(segCX, segCY, 10);
+                spawnSparkles(segCX, segCY, 5);
+                chocolateArea.classList.add('shake');
+                setTimeout(() => chocolateArea.classList.remove('shake'), 350);
+
+                const left = TOTAL_SEGMENTS - totalEaten;
+                if (left > 0) {
+                    const emoji = left > 8 ? '😋' : left > 5 ? '🤤' : left > 2 ? '😯' : '🥺';
+                    biteCounter.innerHTML = `<span class="emoji">${emoji}</span> Bites left: <strong>${left}</strong>`;
+                    instruction.textContent = left > 8 ? '😋 Mmm, so creamy!' :
+                        left > 5 ? '🤤 This is delicious!' :
+                        left > 2 ? '😯 Getting smaller...' : '🥺 Almost gone...';
+                }
+
+                setTimeout(() => {
+                    segment.style.visibility = 'hidden';
+                    segment.style.pointerEvents = 'none';
+                }, 480);
+
+                if (totalEaten >= TOTAL_SEGMENTS) {
+                    finishChocolate();
+                }
+
+                setTimeout(() => { isAnimating = false; }, 380);
+            }
+
+            function finishChocolate() {
+                instruction.textContent = '🎉 All gone! That was heavenly!';
+                instruction.classList.add('peeling-done');
+                biteCounter.innerHTML = '<span class="emoji">😋</span> Chocolate finished!';
+                biteCounter.classList.add('finished');
+                resetBtn.style.display = 'block';
+                chocolateBar.classList.remove('revealed');
+
+                const rect = chocolateArea.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                spawnSparkles(cx, cy, 35);
+                spawnConfetti(cx, cy, 55);
+                document.querySelectorAll('.chocolate-segment').forEach(s => s.style.pointerEvents = 'none');
+            }
+
+            // ────────────────────────────
+            // Particles
+            // ────────────────────────────
+            function spawnCrumbs(x, y, count) {
+                for (let i = 0; i < count; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    const s = 3 + Math.random() * 8;
+                    p.style.width = s + 'px';
+                    p.style.height = s + 'px';
+                    p.style.background = `hsl(${22 + Math.random() * 18}, ${45 + Math.random() * 35}%, ${14 + Math.random() * 22}%)`;
+                    p.style.left = x + 'px';
+                    p.style.top = y + 'px';
+                    p.style.setProperty('--dx', (Math.random() - 0.5) * 130 + 'px');
+                    p.style.setProperty('--dy', (Math.random() - 0.65) * 110 + 'px');
+                    p.style.animationDuration = (0.45 + Math.random() * 0.55) + 's';
+                    particlesContainer.appendChild(p);
+                    setTimeout(() => p.remove(), 850);
+                }
+            }
+
+            function spawnSparkles(x, y, count) {
+                const emojis = ['✨', '⭐', '💫', '🌟', '💖', '✨', '💕', '🔮', '💝', '🩷'];
+                for (let i = 0; i < count; i++) {
+                    const s = document.createElement('div');
+                    s.className = 'sparkle-particle';
+                    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    s.style.left = x + 'px';
+                    s.style.top = y + 'px';
+                    s.style.fontSize = (13 + Math.random() * 22) + 'px';
+                    s.style.setProperty('--sdx', (Math.random() - 0.5) * 170 + 'px');
+                    s.style.setProperty('--sdy', (Math.random() - 0.7) * 150 + 'px');
+                    s.style.setProperty('--sdx2', (Math.random() - 0.5) * 210 + 'px');
+                    s.style.setProperty('--sdy2', (Math.random() - 0.75) * 190 + 'px');
+                    s.style.animationDuration = (0.5 + Math.random() * 0.7) + 's';
+                    particlesContainer.appendChild(s);
+                    setTimeout(() => s.remove(), 950);
+                }
+            }
+
+            function spawnConfetti(x, y, count) {
+                const colors = ['#ff6b9d', '#ff9ec4', '#ffd4e3', '#f0d890', '#e891b4',
+                    '#ffb3c6', '#ffc2d1', '#ffe5ec', '#d4a853', '#ff8fab',
+                    '#c49a3c', '#e8c878', '#ffe0ec', '#ffd0e2'
+                ];
+                for (let i = 0; i < count; i++) {
+                    const c = document.createElement('div');
+                    c.className = 'confetti-piece';
+                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    c.style.left = x + 'px';
+                    c.style.top = y + 'px';
+                    c.style.width = (6 + Math.random() * 13) + 'px';
+                    c.style.height = (5 + Math.random() * 11) + 'px';
+                    c.style.setProperty('--cx', (Math.random() - 0.5) * 380 + 'px');
+                    c.style.setProperty('--cr', (Math.random() * 720 - 360) + 'deg');
+                    c.style.animationDuration = (1 + Math.random() * 2.2) + 's';
+                    c.style.animationDelay = Math.random() * 0.6 + 's';
+                    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    particlesContainer.appendChild(c);
+                    setTimeout(() => c.remove(), 2600);
+                }
+            }
+
+            // ────────────────────────────
+            // Reset
+            // ────────────────────────────
+            function resetAll() {
+                peelTapCount = 0;
+                eatenSegments = new Array(TOTAL_SEGMENTS).fill(false);
+                isPeelingPhase = true;
+                isAnimating = false;
+                totalEaten = 0;
+                firstTapDone = false;
+
+                // Reset wrapper
+                wrapper.style.clipPath = 'inset(0% 0 0 0)';
+                wrapper.style.pointerEvents = 'auto';
+                wrapper.style.display = '';
+                wrapper.classList.remove('wrapper-fall');
+                peelCurl.classList.remove('active');
+                peelCurl.style.top = '0px';
+                peelCurl.style.display = '';
+                tearTab.classList.remove('pulled');
+                chocolateBar.classList.remove('revealed');
+
+                buildSegments();
+                disableSegmentClicks();
+
+                instruction.textContent = '👆 Tap the tab to peel the wrapper!';
+                instruction.classList.remove('peeling-done');
+                biteCounter.innerHTML = '<span class="emoji">🍫</span> Chocolate ready: <strong>12 pieces</strong>';
+                biteCounter.classList.remove('finished');
+                resetBtn.style.display = 'none';
+                chocolateBar.style.transform = 'rotateX(2deg)';
+
+                const rect = chocolateArea.getBoundingClientRect();
+                spawnSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
+            }
+
+            resetBtn.addEventListener('click', resetAll);
+            resetBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                resetAll();
+            });
+
+            // ────────────────────────────
+            // Floating hearts
+            // ────────────────────────────
+            function createHearts() {
+                const hearts = ['💕', '💖', '💗', '💝', '💘', '🩷', '💓', '🌸', '💐', '🩵'];
+                for (let i = 0; i < 22; i++) {
+                    const h = document.createElement('span');
+                    h.className = 'floating-heart';
+                    h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    h.style.left = Math.random() * 94 + '%';
+                    h.style.fontSize = (15 + Math.random() * 30) + 'px';
+                    h.style.animationDuration = (9 + Math.random() * 16) + 's';
+                    h.style.animationDelay = Math.random() * 13 + 's';
+                    h.style.opacity = (0.28 + Math.random() * 0.45);
+                    heartsContainer.appendChild(h);
+                }
+            }
+
+            // ────────────────────────────
+            // Init
+            // ────────────────────────────
+            function init() {
+                buildSegments();
+                disableSegmentClicks();
+                createHearts();
+                peelCurl.classList.remove('active');
+                resetBtn.style.display = 'none';
+                wrapper.style.clipPath = 'inset(0% 0 0 0)';
+            }
+
+            init();
+
+            // Handle resize for peel-curl
+            window.addEventListener('resize', () => {
+                if (peelTapCount > 0 && peelTapCount < TOTAL_PEEL_TAPS && isPeelingPhase) {
+                    const pp = (peelTapCount / TOTAL_PEEL_TAPS) * 100;
+                    const ah = chocolateArea.offsetHeight;
+                    peelCurl.style.top = Math.max(0, (pp / 100) * ah - 11) + 'px';
+                }
+            });
+
+            console.log('🍫 Ualvo tcstsqpvn – longer Dairy Milk style bar ready!');
+            console.log('👆 Tap the gold PULL tab to start peeling');
+            console.log('😋 Keep tapping to peel, then bite the chocolate pieces!');
+        })();
+    </script>
+</body>
+</html>
